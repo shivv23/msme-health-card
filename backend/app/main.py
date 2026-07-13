@@ -43,6 +43,10 @@ async def lifespan(app: FastAPI):
     await init_db()
     os.makedirs(settings.ML_MODEL_PATH, exist_ok=True)
     train_and_save_model(settings.ML_MODEL_PATH)
+
+    from seed_data import seed_if_empty
+    await seed_if_empty()
+
     yield
 
 

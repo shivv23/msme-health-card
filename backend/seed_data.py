@@ -177,5 +177,31 @@ async def seed():
     await engine.dispose()
 
 
+async def seed_if_empty():
+    connect_args = {}
+    engine_kwargs = {"echo": False}
+    if settings.is_sqlite:
+        connect_args = {"check_same_thread": False}
+        engine_kwargs["connect_args"] = connect_args
+    else:
+        engine_kwargs.update({"pool_size": 5, "max_overflow": 5})
+
+    engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
+    session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    async with session_maker() as session:
+        result = await session.execute(select(MSME).limit(1))
+        if result.scalar_one_or_none():
+            await engine.dispose()
+            return
+
+    print("Database empty, seeding 50 MSMEs...")
+    await seed()
+    await engine.dispose()
+
+
 if __name__ == "__main__":
     asyncio.run(seed())
