@@ -10,6 +10,18 @@ import type {
   TopMSME,
   RecentAssessment,
   MSMEFormData,
+  AuthResponse,
+  RegisterData,
+  UpdateProfileData,
+  ChangePasswordData,
+  User,
+  Notification,
+  IndustryBenchmark,
+  StateDistribution,
+  ScoreDistribution,
+  TrendData,
+  ComparisonData,
+  PortfolioRisk,
 } from '../types';
 
 const api = axios.create({
@@ -18,13 +30,141 @@ const api = axios.create({
   timeout: 15000,
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
     const msg = err.response?.data?.detail || err.message || 'An error occurred';
     return Promise.reject(new Error(msg));
   }
 );
+
+// Auth endpoints
+export const login = async (email: string, password: string): Promise<AuthResponse> => {
+  const { data } = await api.post<AuthResponse>('/auth/login', { email, password });
+  return data;
+};
+
+export const register = async (regData: RegisterData): Promise<User> => {
+  const { data } = await api.post<User>('/auth/register', regData);
+  return data;
+};
+
+export const getMe = async (): Promise<User> => {
+  const { data } = await api.get<User>('/auth/me');
+  return data;
+};
+
+export const updateProfile = async (profileData: UpdateProfileData): Promise<User> => {
+  const { data } = await api.put<User>('/auth/me', profileData);
+  return data;
+};
+
+export const changePassword = async (pwData: ChangePasswordData): Promise<void> => {
+  await api.put('/auth/me/password', pwData);
+};
+
+export const getUsers = async (): Promise<User[]> => {
+  const { data } = await api.get<User[]>('/auth/users');
+  return data;
+};
+
+export const deactivateUser = async (id: number): Promise<void> => {
+  await api.delete(`/auth/users/${id}`);
+};
+
+// Notification endpoints
+export const getNotifications = async (): Promise<Notification[]> => {
+  const { data } = await api.get<Notification[]>('/notifications');
+  return data;
+};
+
+export const markNotificationRead = async (id: number): Promise<void> => {
+  await api.put(`/notifications/${id}/read`);
+};
+
+export const markAllRead = async (): Promise<void> => {
+  await api.put('/notifications/read-all');
+};
+
+export const getUnreadCount = async (): Promise<{ count: number }> => {
+  const { data } = await api.get<{ count: number }>('/notifications/unread-count');
+  return data;
+};
+
+// Export endpoints
+export const exportCSV = async (): Promise<void> => {
+  const { data } = await api.get('/export/csv', { responseType: 'blob' });
+  const url = window.URL.createObjectURL(data);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'msme_data.csv';
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+};
+
+export const exportMSMECSV = async (msmeId: number): Promise<void> => {
+  const { data } = await api.get(`/export/csv/${msmeId}`, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(data);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `msme_${msmeId}_report.csv`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+};
+
+export const exportPDFData = async (msmeId: number): Promise<Record<string, unknown>> => {
+  const { data } = await api.get(`/export/pdf/${msmeId}`);
+  return data;
+};
+
+// Analytics endpoints
+export const getIndustryBenchmark = async (): Promise<IndustryBenchmark[]> => {
+  const { data } = await api.get<IndustryBenchmark[]>('/analytics/industry-benchmark');
+  return data;
+};
+
+export const getStateDistribution = async (): Promise<StateDistribution[]> => {
+  const { data } = await api.get<StateDistribution[]>('/analytics/state-distribution');
+  return data;
+};
+
+export const getScoreDistribution = async (): Promise<ScoreDistribution[]> => {
+  const { data } = await api.get<ScoreDistribution[]>('/analytics/score-distribution');
+  return data;
+};
+
+export const getTrend = async (): Promise<TrendData[]> => {
+  const { data } = await api.get<TrendData[]>('/analytics/trend');
+  return data;
+};
+
+export const getComparison = async (ids: number[]): Promise<ComparisonData[]> => {
+  const { data } = await api.get<ComparisonData[]>('/analytics/comparison', {
+    params: { ids: ids.join(',') },
+  });
+  return data;
+};
+
+export const getPortfolioRisk = async (): Promise<PortfolioRisk> => {
+  const { data } = await api.get<PortfolioRisk>('/analytics/portfolio-risk');
+  return data;
+};
 
 // MSME endpoints
 export const getMSMEs = async (): Promise<MSME[]> => {
