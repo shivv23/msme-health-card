@@ -46,3 +46,6 @@ htmlcov/
 
 # ML Model (regenerated on first run)
 backend/ml_model/
+*.tsbuildinfo
+*.pptx
+~$*
