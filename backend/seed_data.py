@@ -103,7 +103,7 @@ async def seed():
     random.seed(42)
 
     async with session_maker() as session:
-        for i in range(50):
+        for i in range(20):
             state, city = STATES_CITIES[i % len(STATES_CITIES)]
             gst = generate_gst_number(state, i)
             name = BUSINESS_NAMES[i]
@@ -169,11 +169,11 @@ async def seed():
             )
             session.add(assessment)
 
-            print(f"  [{i+1:2d}/50] {name} | GST: {gst} | Score: {score_result['overall_score']:5.1f} | {score_result['risk_category']:5s} | Amount: Rs.{credit['recommended_amount']:>12,.2f}")
+            print(f"  [{i+1:2d}/20] {name} | GST: {gst} | Score: {score_result['overall_score']:5.1f} | {score_result['risk_category']:5s} | Amount: Rs.{credit['recommended_amount']:>12,.2f}")
 
         await session.commit()
 
-    print(f"\nSeeding complete: 50 MSMEs, 50 health scores, 50 credit assessments created.")
+    print(f"\nSeeding complete: 20 MSMEs, 20 health scores, 20 credit assessments created.")
     await engine.dispose()
 
 
@@ -198,7 +198,7 @@ async def seed_if_empty():
             await engine.dispose()
             return
 
-    print("Database empty, seeding 50 MSMEs...")
+    print("Database empty, seeding 20 MSMEs...")
     await seed()
     await engine.dispose()
 
