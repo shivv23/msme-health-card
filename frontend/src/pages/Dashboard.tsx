@@ -182,7 +182,7 @@ export default function Dashboard() {
         <Card>
           <h3 className="text-base font-semibold text-slate-200 mb-4">Score Trends</h3>
           {trendData.length > 0 ? (
-            <TrendLine data={trendData} />
+            <TrendLine data={trendData[0]} />
           ) : (
             <div className="h-[300px] flex items-center justify-center text-slate-500">
               No trend data available
