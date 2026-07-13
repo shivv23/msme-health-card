@@ -49,3 +49,5 @@ backend/ml_model/
 *.tsbuildinfo
 *.pptx
 ~$*
+*.db
+*.db-journal
