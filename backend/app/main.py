@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import init_db, async_session_maker
+from app.database import init_db, get_db, async_session_maker
 from app.ml.model import train_and_save_model
 from app.api.msme import router as msme_router
 from app.api.health import router as health_router
