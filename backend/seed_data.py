@@ -81,7 +81,15 @@ def generate_gst_number(state: str, index: int) -> str:
 
 
 async def seed():
-    engine = create_async_engine(settings.DATABASE_URL, echo=False)
+    connect_args = {}
+    engine_kwargs = {"echo": False}
+    if settings.is_sqlite:
+        connect_args = {"check_same_thread": False}
+        engine_kwargs["connect_args"] = connect_args
+    else:
+        engine_kwargs.update({"pool_size": 5, "max_overflow": 5})
+
+    engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
     session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with engine.begin() as conn:
@@ -161,7 +169,7 @@ async def seed():
             )
             session.add(assessment)
 
-            print(f"  [{i+1:2d}/50] {name} | GST: {gst} | Score: {score_result['overall_score']:5.1f} | {score_result['risk_category']:5s} | Amount: ₹{credit['recommended_amount']:>12,.2f}")
+            print(f"  [{i+1:2d}/50] {name} | GST: {gst} | Score: {score_result['overall_score']:5.1f} | {score_result['risk_category']:5s} | Amount: Rs.{credit['recommended_amount']:>12,.2f}")
 
         await session.commit()
 
