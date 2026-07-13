@@ -45,8 +45,8 @@ export function getScoreBg(score: number): string {
   return 'bg-rose-400';
 }
 
-export function getRiskCategory(score: number): 'GREEN' | 'AMBER' | 'RED' {
-  if (score >= 70) return 'GREEN';
-  if (score >= 40) return 'AMBER';
-  return 'RED';
+export function getRiskCategory(score: number): 'Green' | 'Amber' | 'Red' {
+  if (score >= 70) return 'Green';
+  if (score >= 40) return 'Amber';
+  return 'Red';
 }

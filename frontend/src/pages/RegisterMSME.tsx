@@ -11,7 +11,8 @@ const INITIAL: MSMEFormData = {
   business_name: '',
   gst_number: '',
   business_type: '',
-  industry: '',
+  industry_sector: '',
+  registration_date: '',
   state: '',
   city: '',
   employee_count: 0,
@@ -38,7 +39,8 @@ export default function RegisterMSME() {
     else if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(form.gst_number))
       errs.gst_number = 'Invalid GST number format';
     if (!form.business_type) errs.business_type = 'Business type is required';
-    if (!form.industry) errs.industry = 'Industry is required';
+    if (!form.industry_sector) errs.industry_sector = 'Industry is required';
+    if (!form.registration_date) errs.registration_date = 'Registration date is required';
     if (!form.state) errs.state = 'State is required';
     if (!form.city.trim()) errs.city = 'City is required';
     if (form.employee_count <= 0) errs.employee_count = 'Must be greater than 0';
@@ -120,13 +122,21 @@ export default function RegisterMSME() {
             />
             <Select
               label="Industry"
-              value={form.industry}
-              onChange={(e) => update('industry', e.target.value)}
+              value={form.industry_sector}
+              onChange={(e) => update('industry_sector', e.target.value)}
               options={INDUSTRIES.map((i) => ({ value: i, label: i }))}
               placeholder="Select industry"
-              error={errors.industry}
+              error={errors.industry_sector}
             />
           </div>
+
+          <Input
+            label="Registration Date"
+            type="date"
+            value={form.registration_date}
+            onChange={(e) => update('registration_date', e.target.value)}
+            error={errors.registration_date}
+          />
 
           <hr className="border-slate-800" />
           <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Location</h3>

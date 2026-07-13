@@ -15,12 +15,12 @@ interface RadarChartProps {
 }
 
 const DIMENSIONS: DimensionKey[] = [
-  'revenue_score',
-  'payment_score',
-  'compliance_score',
-  'employment_score',
-  'digital_score',
-  'cashflow_score',
+  'revenue_stability',
+  'payment_discipline',
+  'compliance_health',
+  'employment_strength',
+  'digital_presence',
+  'cash_flow_quality',
 ];
 
 export default function RadarChart({ score }: RadarChartProps) {

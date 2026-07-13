@@ -32,6 +32,6 @@ export default function Badge({ children, variant = 'slate', className }: BadgeP
 
 export function RiskBadge({ score }: { score: number }) {
   const cat = getRiskCategory(score);
-  const variant = cat === 'GREEN' ? 'green' : cat === 'AMBER' ? 'amber' : 'red';
+  const variant = cat === 'Green' ? 'green' : cat === 'Amber' ? 'amber' : 'red';
   return <Badge variant={variant}>{cat}</Badge>;
 }

@@ -16,12 +16,12 @@ interface TrendLineProps {
 }
 
 export default function TrendLine({ data }: TrendLineProps) {
-  const chartData = data.map((d) => ({
-    date: formatDate(d.date),
+  const chartData = data.flatMap((d) => d.history).map((d) => ({
+    date: formatDate(d.assessment_date),
     score: d.overall_score,
-    revenue: d.revenue_score,
-    payment: d.payment_score,
-    compliance: d.compliance_score,
+    revenue: d.revenue_stability,
+    payment: d.payment_discipline,
+    compliance: d.compliance_health,
   }));
 
   return (

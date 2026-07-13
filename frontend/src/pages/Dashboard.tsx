@@ -48,13 +48,22 @@ export default function Dashboard() {
         setRiskDist(r);
         setTopMSMEs(t);
         setRecent(ra);
-        setTrendData(ra.map((a) => ({
-          date: a.assessment_date,
-          overall_score: a.overall_score,
-          revenue_score: a.overall_score * 0.9,
-          payment_score: a.overall_score * 0.85,
-          compliance_score: a.overall_score * 1.05,
-        })));
+        setTrendData([{
+          msme_id: 0,
+          business_name: '',
+          history: ra.map((a) => ({
+            id: 0, msme_id: 0, overall_score: a.overall_score,
+            revenue_stability: a.overall_score * 0.9,
+            payment_discipline: a.overall_score * 0.85,
+            compliance_health: a.overall_score * 1.05,
+            employment_strength: a.overall_score,
+            digital_presence: a.overall_score,
+            cash_flow_quality: a.overall_score,
+            risk_category: 'Green', strengths: {}, weaknesses: {},
+            shap_values: {}, data_sources_used: {},
+            assessment_date: a.assessment_date, model_version: '',
+          })),
+        }]);
       } catch (e: any) {
         setError(e.message || 'Failed to load dashboard data');
       } finally {
@@ -68,10 +77,10 @@ export default function Dashboard() {
   if (error) return <div className="text-center text-rose-400 py-20">{error}</div>;
 
   const statCards = [
-    { label: 'Total MSMEs', value: stats?.total_msmes ?? 0, icon: Building2, color: 'text-blue-400' },
-    { label: 'Average Score', value: stats?.average_score ?? 0, icon: TrendingUp, color: 'text-emerald-400' },
-    { label: 'Green Category', value: `${stats?.green_percentage ?? 0}%`, icon: ShieldCheck, color: 'text-emerald-400' },
-    { label: 'Pending Assessments', value: stats?.pending_assessments ?? 0, icon: Clock, color: 'text-amber-400' },
+    { label: 'Total MSMEs', value: stats?.total_msme ?? 0, icon: Building2, color: 'text-blue-400' },
+    { label: 'Average Score', value: stats?.avg_score ?? 0, icon: TrendingUp, color: 'text-emerald-400' },
+    { label: 'Green Category', value: stats ? `${Math.round((stats.green_count / (stats.total_msme || 1)) * 100)}%` : '0%', icon: ShieldCheck, color: 'text-emerald-400' },
+    { label: 'Total Eligible', value: stats?.total_eligible ?? 0, icon: Clock, color: 'text-amber-400' },
   ];
 
   return (
@@ -121,13 +130,13 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {recent.slice(0, 5).map((item) => (
-                  <tr key={item.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                  <tr key={item.msme_id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                     <td className="py-2.5">
                       <Link
                         to={`/msme/${item.gst_number}`}
                         className="text-slate-200 hover:text-emerald-400 transition-colors font-medium"
                       >
-                        {item.msme_name}
+                        {item.business_name}
                       </Link>
                     </td>
                     <td className={`py-2.5 font-semibold ${getScoreColor(item.overall_score)}`}>
@@ -151,7 +160,7 @@ export default function Dashboard() {
           <div className="space-y-3">
             {topMSMEs.slice(0, 5).map((item, idx) => (
               <Link
-                key={item.id}
+                key={item.msme_id}
                 to={`/msme/${item.gst_number}`}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors group"
               >

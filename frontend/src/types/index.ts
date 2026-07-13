@@ -3,84 +3,90 @@ export interface MSME {
   gst_number: string;
   business_name: string;
   business_type: string;
-  industry: string;
+  industry_sector: string;
+  registration_date: string;
   state: string;
   city: string;
   employee_count: number;
   annual_turnover: number;
-  incorporation_date: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface HealthScore {
   id: number;
   msme_id: number;
-  gst_number: string;
   overall_score: number;
-  revenue_score: number;
-  payment_score: number;
-  compliance_score: number;
-  employment_score: number;
-  digital_score: number;
-  cashflow_score: number;
-  risk_category: 'GREEN' | 'AMBER' | 'RED';
-  strengths: string[];
-  weaknesses: string[];
-  data_sources_used: string[];
+  revenue_stability: number;
+  payment_discipline: number;
+  compliance_health: number;
+  employment_strength: number;
+  digital_presence: number;
+  cash_flow_quality: number;
+  risk_category: string;
+  strengths: Record<string, number>;
+  weaknesses: Record<string, number>;
+  shap_values: Record<string, number>;
+  data_sources_used: Record<string, boolean>;
   assessment_date: string;
   model_version: string;
-  shap_explanations: Record<string, number>;
 }
 
 export interface CreditAssessment {
   id: number;
   msme_id: number;
-  eligible: boolean;
+  health_score_id: number;
   recommended_amount: number;
-  tenure_months: number;
-  interest_rate: number;
-  risk_factors: string[];
+  recommended_tenure_months: number;
+  recommended_rate: number;
+  eligibility: boolean;
+  confidence_score: number;
+  risk_factors: Record<string, unknown>;
   assessment_date: string;
 }
 
 export interface ScoreHistory {
-  date: string;
-  overall_score: number;
-  revenue_score: number;
-  payment_score: number;
-  compliance_score: number;
-  employment_score: number;
-  digital_score: number;
-  cashflow_score: number;
+  msme_id: number;
+  business_name: string;
+  history: HealthScore[];
 }
 
 export interface DashboardStats {
-  total_msmes: number;
-  average_score: number;
-  green_percentage: number;
-  pending_assessments: number;
+  total_msme: number;
+  total_assessments: number;
+  avg_score: number;
+  green_count: number;
+  amber_count: number;
+  red_count: number;
+  avg_turnover: number;
+  total_eligible: number;
 }
 
 export interface RiskDistribution {
   green: number;
   amber: number;
   red: number;
+  green_pct: number;
+  amber_pct: number;
+  red_pct: number;
 }
 
 export interface TopMSME {
-  id: number;
+  msme_id: number;
   business_name: string;
   gst_number: string;
   overall_score: number;
   risk_category: string;
+  annual_turnover: number;
 }
 
 export interface RecentAssessment {
-  id: number;
-  msme_name: string;
+  msme_id: number;
+  business_name: string;
   gst_number: string;
   overall_score: number;
   risk_category: string;
+  recommended_amount: number;
   assessment_date: string;
 }
 
@@ -88,7 +94,8 @@ export interface MSMEFormData {
   business_name: string;
   gst_number: string;
   business_type: string;
-  industry: string;
+  industry_sector: string;
+  registration_date: string;
   state: string;
   city: string;
   employee_count: number;
@@ -96,26 +103,26 @@ export interface MSMEFormData {
 }
 
 export type DimensionKey =
-  | 'revenue_score'
-  | 'payment_score'
-  | 'compliance_score'
-  | 'employment_score'
-  | 'digital_score'
-  | 'cashflow_score';
+  | 'revenue_stability'
+  | 'payment_discipline'
+  | 'compliance_health'
+  | 'employment_strength'
+  | 'digital_presence'
+  | 'cash_flow_quality';
 
 export const DIMENSION_LABELS: Record<DimensionKey, string> = {
-  revenue_score: 'Revenue',
-  payment_score: 'Payment',
-  compliance_score: 'Compliance',
-  employment_score: 'Employment',
-  digital_score: 'Digital',
-  cashflow_score: 'Cash Flow',
+  revenue_stability: 'Revenue Stability',
+  payment_discipline: 'Payment Discipline',
+  compliance_health: 'Compliance Health',
+  employment_strength: 'Employment Strength',
+  digital_presence: 'Digital Presence',
+  cash_flow_quality: 'Cash Flow Quality',
 };
 
 export const RISK_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  GREEN: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-  AMBER: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30' },
-  RED: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/30' },
+  Green: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+  Amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30' },
+  Red: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/30' },
 };
 
 export const INDIAN_STATES = [
@@ -131,26 +138,15 @@ export const INDIAN_STATES = [
 ];
 
 export const BUSINESS_TYPES = [
-  'Sole Proprietorship',
-  'Partnership',
-  'Private Limited',
-  'Public Limited',
-  'LLP',
-  'Cooperative',
+  'Manufacturing', 'Services', 'Trading', 'Other',
 ];
 
 export const INDUSTRIES = [
-  'Manufacturing',
-  'Trading',
-  'Services',
-  'Textiles',
-  'Food Processing',
-  'IT & Electronics',
-  'Construction',
-  'Agriculture',
-  'Healthcare',
-  'Education',
-  'Transportation',
-  'Hospitality',
-  'Other',
+  'Automotive Components', 'Textiles & Garments', 'Food Processing',
+  'Pharmaceuticals', 'IT Services', 'Electronics Manufacturing',
+  'Chemicals & Dyes', 'Plastics & Polymers', 'Metal Fabrication',
+  'Packaging Solutions', 'Agricultural Equipment', 'Construction Materials',
+  'Paper & Stationery', 'Rubber Products', 'Glass & Ceramics',
+  'Wood & Furniture', 'Printing & Publishing', 'Leather Goods',
+  'Engineering Services', 'Logistics & Warehousing',
 ];

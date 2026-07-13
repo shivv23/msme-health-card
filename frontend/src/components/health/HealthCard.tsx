@@ -20,16 +20,16 @@ interface HealthCardProps {
 }
 
 const DIMENSIONS: DimensionKey[] = [
-  'revenue_score',
-  'payment_score',
-  'compliance_score',
-  'employment_score',
-  'digital_score',
-  'cashflow_score',
+  'revenue_stability',
+  'payment_discipline',
+  'compliance_health',
+  'employment_strength',
+  'digital_presence',
+  'cash_flow_quality',
 ];
 
 export default function HealthCard({ score, compact = false, showShap = true }: HealthCardProps) {
-  const shapEntries = Object.entries(score.shap_explanations || {})
+  const shapEntries = Object.entries(score.shap_values || {})
     .sort(([, a], [, b]) => Math.abs(b) - Math.abs(a))
     .slice(0, 8);
 
@@ -38,7 +38,7 @@ export default function HealthCard({ score, compact = false, showShap = true }: 
       <Card className="space-y-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-100">{score.gst_number}</h2>
+            <h2 className="text-xl font-bold text-slate-100">Health Score #{score.id}</h2>
             <p className="text-sm text-slate-400 mt-1">Financial Health Assessment</p>
           </div>
           <div className="text-right text-sm">
@@ -80,11 +80,11 @@ export default function HealthCard({ score, compact = false, showShap = true }: 
             Strengths
           </h3>
           <ul className="space-y-2">
-            {score.strengths.length > 0 ? (
-              score.strengths.map((s, i) => (
+            {Object.keys(score.strengths).length > 0 ? (
+              Object.entries(score.strengths).map(([key, val], i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
                   <CheckCircle size={14} className="text-emerald-400 mt-0.5 flex-shrink-0" />
-                  {s}
+                  {key.replace(/_/g, ' ')} ({val > 0 ? '+' : ''}{val.toFixed(2)})
                 </li>
               ))
             ) : (
@@ -99,11 +99,11 @@ export default function HealthCard({ score, compact = false, showShap = true }: 
             Weaknesses
           </h3>
           <ul className="space-y-2">
-            {score.weaknesses.length > 0 ? (
-              score.weaknesses.map((w, i) => (
+            {Object.keys(score.weaknesses).length > 0 ? (
+              Object.entries(score.weaknesses).map(([key, val], i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
                   <XCircle size={14} className="text-rose-400 mt-0.5 flex-shrink-0" />
-                  {w}
+                  {key.replace(/_/g, ' ')} ({val > 0 ? '+' : ''}{val.toFixed(2)})
                 </li>
               ))
             ) : (
@@ -119,8 +119,8 @@ export default function HealthCard({ score, compact = false, showShap = true }: 
           Data Sources Used
         </h3>
         <div className="flex flex-wrap gap-2">
-          {score.data_sources_used.length > 0 ? (
-            score.data_sources_used.map((source, i) => (
+          {Object.keys(score.data_sources_used).length > 0 ? (
+            Object.entries(score.data_sources_used).filter(([, used]) => used).map(([source], i) => (
               <span
                 key={i}
                 className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 border border-slate-700 px-3 py-1 text-xs text-slate-300"

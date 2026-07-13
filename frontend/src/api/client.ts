@@ -15,6 +15,7 @@ import type {
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
   headers: { 'Content-Type': 'application/json' },
+  timeout: 15000,
 });
 
 api.interceptors.response.use(
@@ -43,23 +44,23 @@ export const registerMSME = async (formData: MSMEFormData): Promise<MSME> => {
 
 // Health assessment endpoints
 export const assessHealth = async (gstNumber: string): Promise<HealthScore> => {
-  const { data } = await api.post<HealthScore>(`/msme/${gstNumber}/assess`);
+  const { data } = await api.post<HealthScore>(`/health/assess/${gstNumber}`);
   return data;
 };
 
 export const getHealthScore = async (msmeId: number): Promise<HealthScore> => {
-  const { data } = await api.get<HealthScore>(`/msme/${msmeId}/health`);
+  const { data } = await api.get<HealthScore>(`/health/${msmeId}`);
   return data;
 };
 
 export const getScoreHistory = async (msmeId: number): Promise<ScoreHistory[]> => {
-  const { data } = await api.get<ScoreHistory[]>(`/msme/${msmeId}/score-history`);
+  const { data } = await api.get<ScoreHistory[]>(`/health/${msmeId}/history`);
   return data;
 };
 
 // Credit endpoints
 export const getCreditAssessment = async (msmeId: number): Promise<CreditAssessment> => {
-  const { data } = await api.get<CreditAssessment>(`/msme/${msmeId}/credit`);
+  const { data } = await api.get<CreditAssessment>(`/credit/${msmeId}`);
   return data;
 };
 

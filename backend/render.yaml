@@ -1,12 +1,14 @@
 services:
   - type: web
-    name: msme-health-card-api
+    name: msme-health-api
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        sync: false
+        value: sqlite+aiosqlite:///./msme_health.db
       - key: APP_ENV
         value: production
+      - key: CORS_ORIGINS
+        value: https://msme-health-card-zeta.vercel.app,http://localhost:5173
