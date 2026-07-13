@@ -69,21 +69,21 @@ export default function Analytics() {
       {portfolio && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="rounded-xl bg-slate-900 border border-slate-800 p-4">
-            <p className="text-xs text-slate-500 mb-1">Total MSMEs</p>
-            <p className="text-2xl font-bold text-slate-100">{portfolio.total}</p>
+            <p className="text-xs text-slate-500 mb-1">Total Assessments</p>
+            <p className="text-2xl font-bold text-slate-100">{portfolio.portfolio_summary.total_assessments}</p>
           </div>
           <div className="rounded-xl bg-slate-900 border border-slate-800 p-4">
             <p className="text-xs text-slate-500 mb-1">Green</p>
-            <p className="text-2xl font-bold text-emerald-400">{portfolio.green_pct}%</p>
+            <p className="text-2xl font-bold text-emerald-400">{portfolio.risk_breakdown.green.percentage}%</p>
           </div>
           <div className="rounded-xl bg-slate-900 border border-slate-800 p-4">
             <p className="text-xs text-slate-500 mb-1">Amber</p>
-            <p className="text-2xl font-bold text-amber-400">{portfolio.amber_pct}%</p>
+            <p className="text-2xl font-bold text-amber-400">{portfolio.risk_breakdown.amber.percentage}%</p>
           </div>
           <div className="rounded-xl bg-slate-900 border border-slate-800 p-4">
             <p className="text-xs text-slate-500 mb-1">Red / At Risk</p>
-            <p className="text-2xl font-bold text-rose-400">{portfolio.red_pct}%</p>
-            <p className="text-[10px] text-slate-500">{portfolio.at_risk_count} at risk</p>
+            <p className="text-2xl font-bold text-rose-400">{portfolio.risk_breakdown.red.percentage}%</p>
+            <p className="text-[10px] text-slate-500">{portfolio.risk_breakdown.red.count} at risk</p>
           </div>
         </div>
       )}
@@ -103,7 +103,7 @@ export default function Analytics() {
               <BarChart data={benchmark} layout="vertical" margin={{ left: 10, right: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis type="category" dataKey="industry" tick={{ fill: '#94a3b8', fontSize: 11 }} width={140} />
+                <YAxis type="category" dataKey="industry_sector" tick={{ fill: '#94a3b8', fontSize: 11 }} width={140} />
                 <Tooltip
                   contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', fontSize: '12px' }}
                   labelStyle={{ color: '#e2e8f0' }}
@@ -138,7 +138,7 @@ export default function Analytics() {
                   labelStyle={{ color: '#e2e8f0' }}
                 />
                 <Line type="monotone" dataKey="avg_score" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
-                <Line type="monotone" dataKey="assessments" stroke="#6366f1" strokeWidth={2} dot={{ fill: '#6366f1', r: 3 }} yAxisId={0} />
+                <Line type="monotone" dataKey="assessment_count" stroke="#6366f1" strokeWidth={2} dot={{ fill: '#6366f1', r: 3 }} yAxisId={0} />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -192,7 +192,6 @@ export default function Analytics() {
                   <tr className="text-xs text-slate-500 border-b border-slate-800">
                     <th className="text-left py-2 pr-4">State</th>
                     <th className="text-right py-2 px-4">Count</th>
-                    <th className="text-right py-2 pl-4">Avg Score</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -200,9 +199,6 @@ export default function Analytics() {
                     <tr key={s.state} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                       <td className="py-2.5 pr-4 text-slate-300 text-xs">{s.state}</td>
                       <td className="py-2.5 px-4 text-right text-slate-400 text-xs">{s.count}</td>
-                      <td className={`py-2.5 pl-4 text-right text-xs font-medium ${
-                        s.avg_score >= 70 ? 'text-emerald-400' : s.avg_score >= 40 ? 'text-amber-400' : 'text-rose-400'
-                      }`}>{s.avg_score.toFixed(1)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -212,13 +208,13 @@ export default function Analytics() {
         </div>
       </div>
 
-      {portfolio && portfolio.at_risk_count > 0 && (
+      {portfolio && portfolio.risk_breakdown.red.count > 0 && (
         <div className="rounded-xl bg-rose-500/5 border border-rose-500/20 p-4 flex items-start gap-3">
           <AlertTriangle size={18} className="text-rose-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-medium text-rose-400">Portfolio Risk Alert</p>
             <p className="text-xs text-slate-400 mt-1">
-              {portfolio.at_risk_count} MSMEs are in the red zone. Average recovery score: {portfolio.avg_recovery_score.toFixed(1)}.
+              {portfolio.risk_breakdown.red.count} MSMEs are in the red zone. Average score: {portfolio.portfolio_summary.avg_score.toFixed(1)}.
               Review flagged accounts for potential intervention.
             </p>
           </div>

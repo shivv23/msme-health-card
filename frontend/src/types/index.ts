@@ -197,15 +197,14 @@ export interface Notification {
 }
 
 export interface IndustryBenchmark {
-  industry: string;
+  industry_sector: string;
   avg_score: number;
-  count: number;
+  msme_count: number;
 }
 
 export interface StateDistribution {
   state: string;
   count: number;
-  avg_score: number;
 }
 
 export interface ScoreDistribution {
@@ -215,21 +214,34 @@ export interface ScoreDistribution {
 
 export interface TrendData {
   month: string;
+  label: string;
   avg_score: number;
-  assessments: number;
+  assessment_count: number;
 }
 
 export interface ComparisonData {
   msme_id: number;
-  name: string;
-  [key: string]: string | number;
+  business_name: string;
+  [key: string]: string | number | Record<string, unknown>;
 }
 
 export interface PortfolioRisk {
-  total: number;
-  green_pct: number;
-  amber_pct: number;
-  red_pct: number;
-  at_risk_count: number;
-  avg_recovery_score: number;
+  portfolio_summary: {
+    total_assessments: number;
+    avg_score: number;
+    avg_confidence: number;
+    total_credit_eligible: number;
+    total_credit_amount: number;
+  };
+  risk_breakdown: {
+    green: { count: number; percentage: number };
+    amber: { count: number; percentage: number };
+    red: { count: number; percentage: number };
+  };
+  sector_risks: {
+    industry_sector: string;
+    avg_score: number;
+    msme_count: number;
+    risk_level: string;
+  }[];
 }

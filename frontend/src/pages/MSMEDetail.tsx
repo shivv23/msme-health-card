@@ -28,7 +28,7 @@ export default function MSMEDetail() {
   const { gstNumber } = useParams<{ gstNumber: string }>();
   const [msme, setMsme] = useState<MSME | null>(null);
   const [score, setScore] = useState<HealthScore | null>(null);
-  const [history, setHistory] = useState<ScoreHistory[]>([]);
+  const [history, setHistory] = useState<ScoreHistory | null>(null);
   const [credit, setCredit] = useState<CreditAssessment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -46,7 +46,7 @@ export default function MSMEDetail() {
           setScore(scoreData);
 
           const [histData, creditData] = await Promise.all([
-            getScoreHistory(msmeData.id).catch(() => []),
+            getScoreHistory(msmeData.id).catch(() => null),
             getCreditAssessment(msmeData.id).catch(() => null),
           ]);
           setHistory(histData);
@@ -141,7 +141,7 @@ export default function MSMEDetail() {
           </Card>
 
           <div className="lg:col-span-2">
-            {history.length > 0 ? (
+            {history && history.history && history.history.length > 0 ? (
               <Card>
                 <h3 className="text-base font-semibold text-slate-200 mb-4">Score History</h3>
                 <TrendLine data={history} />

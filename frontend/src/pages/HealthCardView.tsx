@@ -14,7 +14,7 @@ export default function HealthCardView() {
   const [msme, setMsme] = useState<MSME | null>(null);
   const [score, setScore] = useState<HealthScore | null>(null);
   const [credit, setCredit] = useState<CreditAssessment | null>(null);
-  const [history, setHistory] = useState<ScoreHistory[]>([]);
+  const [history, setHistory] = useState<ScoreHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -32,7 +32,7 @@ export default function HealthCardView() {
         if (scoreData) {
           setScore(scoreData);
           const [hist, creditData] = await Promise.all([
-            getScoreHistory(scoreData.msme_id).catch(() => []),
+            getScoreHistory(scoreData.msme_id).catch(() => null),
             getCreditAssessment(scoreData.msme_id).catch(() => null),
           ]);
           setHistory(hist);
@@ -92,7 +92,7 @@ export default function HealthCardView() {
         <CreditRecommendation credit={credit} />
       )}
 
-      {history.length > 0 && (
+      {history && history.history && history.history.length > 0 && (
         <div className="rounded-xl bg-slate-900 border border-slate-800 p-6">
           <h3 className="text-base font-semibold text-slate-200 mb-4">Score History</h3>
           <TrendLine data={history} />

@@ -56,8 +56,8 @@ export const login = async (email: string, password: string): Promise<AuthRespon
   return data;
 };
 
-export const register = async (regData: RegisterData): Promise<User> => {
-  const { data } = await api.post<User>('/auth/register', regData);
+export const register = async (regData: RegisterData): Promise<AuthResponse> => {
+  const { data } = await api.post<AuthResponse>('/auth/register', regData);
   return data;
 };
 
@@ -99,8 +99,8 @@ export const markAllRead = async (): Promise<void> => {
 };
 
 export const getUnreadCount = async (): Promise<{ count: number }> => {
-  const { data } = await api.get<{ count: number }>('/notifications/unread-count');
-  return data;
+  const { data } = await api.get<{ unread_count: number }>('/notifications/unread-count');
+  return { count: data.unread_count };
 };
 
 // Export endpoints
@@ -135,30 +135,30 @@ export const exportPDFData = async (msmeId: number): Promise<Record<string, unkn
 
 // Analytics endpoints
 export const getIndustryBenchmark = async (): Promise<IndustryBenchmark[]> => {
-  const { data } = await api.get<IndustryBenchmark[]>('/analytics/industry-benchmark');
-  return data;
+  const { data } = await api.get<{ benchmarks: IndustryBenchmark[] }>('/analytics/industry-benchmark');
+  return data.benchmarks;
 };
 
 export const getStateDistribution = async (): Promise<StateDistribution[]> => {
-  const { data } = await api.get<StateDistribution[]>('/analytics/state-distribution');
-  return data;
+  const { data } = await api.get<{ distribution: StateDistribution[] }>('/analytics/state-distribution');
+  return data.distribution;
 };
 
 export const getScoreDistribution = async (): Promise<ScoreDistribution[]> => {
-  const { data } = await api.get<ScoreDistribution[]>('/analytics/score-distribution');
-  return data;
+  const { data } = await api.get<{ distribution: ScoreDistribution[] }>('/analytics/score-distribution');
+  return data.distribution;
 };
 
 export const getTrend = async (): Promise<TrendData[]> => {
-  const { data } = await api.get<TrendData[]>('/analytics/trend');
-  return data;
+  const { data } = await api.get<{ trends: TrendData[] }>('/analytics/trend');
+  return data.trends;
 };
 
 export const getComparison = async (ids: number[]): Promise<ComparisonData[]> => {
-  const { data } = await api.get<ComparisonData[]>('/analytics/comparison', {
+  const { data } = await api.get<{ comparisons: ComparisonData[] }>('/analytics/comparison', {
     params: { ids: ids.join(',') },
   });
-  return data;
+  return data.comparisons;
 };
 
 export const getPortfolioRisk = async (): Promise<PortfolioRisk> => {
@@ -168,8 +168,8 @@ export const getPortfolioRisk = async (): Promise<PortfolioRisk> => {
 
 // MSME endpoints
 export const getMSMEs = async (): Promise<MSME[]> => {
-  const { data } = await api.get<MSME[]>('/msme/');
-  return data;
+  const { data } = await api.get<{ total: number; msme_list: MSME[] }>('/msme/');
+  return data.msme_list;
 };
 
 export const getMSME = async (gstNumber: string): Promise<MSME> => {
@@ -178,7 +178,7 @@ export const getMSME = async (gstNumber: string): Promise<MSME> => {
 };
 
 export const registerMSME = async (formData: MSMEFormData): Promise<MSME> => {
-  const { data } = await api.post<MSME>('/msme/', formData);
+  const { data } = await api.post<MSME>('/msme/register', formData);
   return data;
 };
 
@@ -193,8 +193,8 @@ export const getHealthScore = async (msmeId: number): Promise<HealthScore> => {
   return data;
 };
 
-export const getScoreHistory = async (msmeId: number): Promise<ScoreHistory[]> => {
-  const { data } = await api.get<ScoreHistory[]>(`/health/${msmeId}/history`);
+export const getScoreHistory = async (msmeId: number): Promise<ScoreHistory> => {
+  const { data } = await api.get<ScoreHistory>(`/health/${msmeId}/history`);
   return data;
 };
 

@@ -35,6 +35,7 @@ async def register_msme(payload: MSMERegisterRequest, db: AsyncSession = Depends
     return msme
 
 
+@router.get("/", response_model=MSMEListResponse)
 @router.get("/list", response_model=MSMEListResponse)
 async def list_msme(
     skip: int = 0,

@@ -12,11 +12,11 @@ import type { ScoreHistory } from '../../types';
 import { formatDate } from '../../lib/utils';
 
 interface TrendLineProps {
-  data: ScoreHistory[];
+  data: ScoreHistory;
 }
 
 export default function TrendLine({ data }: TrendLineProps) {
-  const chartData = data.flatMap((d) => d.history).map((d) => ({
+  const chartData = (data.history || []).map((d) => ({
     date: formatDate(d.assessment_date),
     score: d.overall_score,
     revenue: d.revenue_stability,
