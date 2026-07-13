@@ -12,9 +12,15 @@ from app.ml.model import train_and_save_model
 from app.api.msme import router as msme_router
 from app.api.health import router as health_router
 from app.api.dashboard import router as dashboard_router
+from app.api.auth import router as auth_router
+from app.api.notifications import router as notification_router
+from app.api.exports import router as export_router
+from app.api.analytics import router as analytics_router
 from app.models.msme import MSME
 from app.models.credit_assessment import CreditAssessment
+from app.models.user import User
 from app.schemas.health import CreditAssessmentResponse
+from app.services.auth_service import hash_password
 
 
 credit_router = APIRouter(prefix="/api/v1/credit", tags=["Credit"])
@@ -38,6 +44,33 @@ async def get_credit_assessment(msme_id: int, db: AsyncSession = Depends(get_db)
     return assessment
 
 
+async def create_default_users(db: AsyncSession):
+    result = await db.execute(select(User).limit(1))
+    if result.scalar_one_or_none():
+        return
+
+    admin = User(
+        email="admin@msme.com",
+        full_name="System Admin",
+        hashed_password=hash_password("admin123"),
+        role="admin",
+        phone=None,
+        is_active=True,
+    )
+    officer = User(
+        email="officer@msme.com",
+        full_name="Credit Officer",
+        hashed_password=hash_password("officer123"),
+        role="officer",
+        phone=None,
+        is_active=True,
+    )
+    db.add(admin)
+    db.add(officer)
+    await db.commit()
+    print("Default users created: admin@msme.com / officer@msme.com")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -46,6 +79,9 @@ async def lifespan(app: FastAPI):
 
     from seed_data import seed_if_empty
     await seed_if_empty()
+
+    async with get_db() as db:
+        await create_default_users(db)
 
     yield
 
@@ -69,6 +105,10 @@ app.include_router(msme_router)
 app.include_router(health_router)
 app.include_router(dashboard_router)
 app.include_router(credit_router)
+app.include_router(auth_router)
+app.include_router(notification_router)
+app.include_router(export_router)
+app.include_router(analytics_router)
 
 
 @app.get("/health", tags=["Health"])
